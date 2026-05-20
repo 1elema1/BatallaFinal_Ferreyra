@@ -1,0 +1,3 @@
+TURNO:7
+HEROE:ema (flecha),38,18,8,52
+VILLANO:moto (tomi),0,18,8,52

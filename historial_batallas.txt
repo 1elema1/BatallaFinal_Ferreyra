@@ -1,0 +1,5 @@
+4
+BATALLA #1 - Heroe: ferr (eeasas) | Villano: manan (lelele) | Ganador: ferr (eeasas) | Turnos: 10
+BATALLA #2 - Heroe: ema (flecha) | Villano: moto (tomi) | Ganador: ema (flecha) | Turnos: 6
+BATALLA #3 - Heroe: ema (flecha) | Villano: moto (tomi) | Ganador: ema (flecha) | Turnos: 6
+BATALLA #4 - Heroe: ema (flecha) | Villano: moto (tomi) | Ganador: ema (flecha) | Turnos: 6

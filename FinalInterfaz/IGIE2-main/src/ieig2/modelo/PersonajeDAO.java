@@ -12,18 +12,47 @@ public class PersonajeDAO {
 
     public int insertarPersonaje(Personaje p, String tipo) {
 
-        String sql = "INSERT INTO personajes(nombre,tipo,vida_final,victorias,derrotas,supremos_usados,armas_invocadas) VALUES(?,?,?,?,?,?,?)";
+        // 1. Extraer nombre y apodo de la cadena "Nombre (Apodo)"
+        String nombreReal = p.getNombre();
+        String apodo = p.getNombre(); 
+        
+        if (p.getNombre().contains("(") && p.getNombre().contains(")")) {
+            int start = p.getNombre().indexOf("(");
+            int end = p.getNombre().indexOf(")");
+            apodo = p.getNombre().substring(start + 1, end);
+            nombreReal = p.getNombre().substring(0, start).trim();
+        } else {
+            // Si por algún motivo no tiene paréntesis, le agregamos la hora para que sea único
+            apodo = apodo + "_" + System.currentTimeMillis();
+        }
 
+        // 2. Buscar si ya existe en la BD por su apodo (para respetar el UNIQUE)
+        String sqlSelect = "SELECT id FROM personajes WHERE apodo = ?";
         try (Connection conn = ConexionDB.conectar();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement psSelect = conn.prepareStatement(sqlSelect)) {
+            psSelect.setString(1, apodo);
+            ResultSet rs = psSelect.executeQuery();
+            if (rs.next()) {
+                // Si el personaje ya existe, devolvemos su ID y evitamos que el programa explote
+                return rs.getInt("id"); 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar personaje: " + e.getMessage());
+        }
 
-            ps.setString(1, p.getNombre());
-            ps.setString(2, tipo);
-            ps.setInt(3, p.getVida());
-            ps.setInt(4, 0);
+        // 3. Si no existe, lo insertamos en la base de datos
+        String sqlInsert = "INSERT INTO personajes(nombre, apodo, tipo, vida_final, victorias, derrotas, supremos_usados, armas_invocadas) VALUES(?,?,?,?,?,?,?,?)";
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setString(1, nombreReal);
+            ps.setString(2, apodo); // <- Acá cumplimos con la consigna del apodo
+            ps.setString(3, tipo);
+            ps.setInt(4, p.getVida());
             ps.setInt(5, 0);
-            ps.setInt(6, p.getSupremosUsados());
-            ps.setInt(7, p.getArmasInvocadas().size());
+            ps.setInt(6, 0);
+            ps.setInt(7, p.getSupremosUsados());
+            ps.setInt(8, p.getArmasInvocadas().size());
 
             ps.executeUpdate();
 

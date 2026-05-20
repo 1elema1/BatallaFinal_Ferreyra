@@ -1,0 +1,8 @@
+HEROE;ema (flecha);38;18;8;52
+VILLANO;moto (tomi);0;18;8;52
+-----
+MAYOR_DAÑO: 20 (ema (flecha))
+BATALLA_MAS_LARGA: 6 turnos (ganador: ema (flecha))
+ARMAS_INVOCADAS: ema (flecha)=1, moto (tomi)=1
+ATAQUES_SUPREMOS: ema (flecha)=0, moto (tomi)=0
+PORCENTAJE_VICTORIAS: HEROE=100%, VILLANO=0%

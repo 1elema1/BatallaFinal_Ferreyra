@@ -16,6 +16,7 @@ public class CrearTablasDB {
         CREATE TABLE IF NOT EXISTS personajes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
+            apodo TEXT UNIQUE,
             tipo TEXT,
             vida_final INTEGER,
             victorias INTEGER DEFAULT 0,
