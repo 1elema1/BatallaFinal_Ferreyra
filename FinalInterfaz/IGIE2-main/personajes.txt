@@ -1,0 +1,8 @@
+HEROE;sadasdas (dasdsada);45;24;9;56
+VILLANO;asdsdfgfdf (fghfgfg);0;24;9;56
+-----
+MAYOR_DAÑO: 25 (sadasdas (dasdsada))
+BATALLA_MAS_LARGA: 5 turnos (ganador: sadasdas (dasdsada))
+ARMAS_INVOCADAS: sadasdas (dasdsada)=1, asdsdfgfdf (fghfgfg)=1
+ATAQUES_SUPREMOS: sadasdas (dasdsada)=0, asdsdfgfdf (fghfgfg)=0
+PORCENTAJE_VICTORIAS: HEROE=100%, VILLANO=0%

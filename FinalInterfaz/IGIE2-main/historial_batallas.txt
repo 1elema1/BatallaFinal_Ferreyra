@@ -1,0 +1,6 @@
+41
+BATALLA #37 - Heroe: dasda (dsad) | Villano: dasdassa (dsadass) | Ganador: dasda (dsad) | Turnos: 9
+BATALLA #38 - Heroe: dasda (dsad) | Villano: dasdassa (dsadass) | Ganador: dasda (dsad) | Turnos: 0
+BATALLA #39 - Heroe: sadasdas (dasdsada) | Villano: asdsdfgfdf (fghfgfg) | Ganador: sadasdas (dasdsada) | Turnos: 5
+BATALLA #40 - Heroe: sadasdas (dasdsada) | Villano: asdsdfgfdf (fghfgfg) | Ganador: sadasdas (dasdsada) | Turnos: 5
+BATALLA #41 - Heroe: sadasdas (dasdsada) | Villano: asdsdfgfdf (fghfgfg) | Ganador: sadasdas (dasdsada) | Turnos: 5
