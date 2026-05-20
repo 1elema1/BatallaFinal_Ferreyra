@@ -22,7 +22,7 @@ Como mejoras adicionales al proyecto base se implementaron funcionalidades extra
 ## 👥 Integrantes del Equipo
 
 
-- **[Mateo Paredes]**- PROMPTS (https://chatgpt.com/share/69adc85d-a338-8002-9488-e026ddfad4b8)
+- **[Emanuel Ferreyra]**- PROMPTS ()
 Durante el desarrollo se utilizó ChatGPT como herramienta de asistencia para depuración de código, consultas SQL, implementación de JDBC y revisión de arquitectura MVC.
 
 
