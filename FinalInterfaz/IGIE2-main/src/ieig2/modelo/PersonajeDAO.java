@@ -12,47 +12,18 @@ public class PersonajeDAO {
 
     public int insertarPersonaje(Personaje p, String tipo) {
 
-        // 1. Extraer nombre y apodo de la cadena "Nombre (Apodo)"
-        String nombreReal = p.getNombre();
-        String apodo = p.getNombre(); 
-        
-        if (p.getNombre().contains("(") && p.getNombre().contains(")")) {
-            int start = p.getNombre().indexOf("(");
-            int end = p.getNombre().indexOf(")");
-            apodo = p.getNombre().substring(start + 1, end);
-            nombreReal = p.getNombre().substring(0, start).trim();
-        } else {
-            // Si por algún motivo no tiene paréntesis, le agregamos la hora para que sea único
-            apodo = apodo + "_" + System.currentTimeMillis();
-        }
+        String sql = "INSERT INTO personajes(nombre,tipo,vida_final,victorias,derrotas,supremos_usados,armas_invocadas) VALUES(?,?,?,?,?,?,?)";
 
-        // 2. Buscar si ya existe en la BD por su apodo (para respetar el UNIQUE)
-        String sqlSelect = "SELECT id FROM personajes WHERE apodo = ?";
         try (Connection conn = ConexionDB.conectar();
-             PreparedStatement psSelect = conn.prepareStatement(sqlSelect)) {
-            psSelect.setString(1, apodo);
-            ResultSet rs = psSelect.executeQuery();
-            if (rs.next()) {
-                // Si el personaje ya existe, devolvemos su ID y evitamos que el programa explote
-                return rs.getInt("id"); 
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al buscar personaje: " + e.getMessage());
-        }
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-        // 3. Si no existe, lo insertamos en la base de datos
-        String sqlInsert = "INSERT INTO personajes(nombre, apodo, tipo, vida_final, victorias, derrotas, supremos_usados, armas_invocadas) VALUES(?,?,?,?,?,?,?,?)";
-        try (Connection conn = ConexionDB.conectar();
-             PreparedStatement ps = conn.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, nombreReal);
-            ps.setString(2, apodo); // <- Acá cumplimos con la consigna del apodo
-            ps.setString(3, tipo);
-            ps.setInt(4, p.getVida());
+            ps.setString(1, p.getNombre());
+            ps.setString(2, tipo);
+            ps.setInt(3, p.getVida());
+            ps.setInt(4, 0);
             ps.setInt(5, 0);
-            ps.setInt(6, 0);
-            ps.setInt(7, p.getSupremosUsados());
-            ps.setInt(8, p.getArmasInvocadas().size());
+            ps.setInt(6, p.getSupremosUsados());
+            ps.setInt(7, p.getArmasInvocadas().size());
 
             ps.executeUpdate();
 
@@ -93,29 +64,36 @@ public class PersonajeDAO {
         }
     }
 
-    public List<String> obtenerRanking() {
+    public java.util.List<String> obtenerRanking() {
+        java.util.List<String> ranking = new java.util.ArrayList<>();
 
-        List<String> ranking = new ArrayList<>();
-
+        // Usamos SUM para acumular victorias y supremos, y GROUP BY para no repetir personajes
         String sql = """
-                SELECT nombre,victorias,derrotas
+                SELECT nombre, 
+                       MAX(tipo) AS tipo, 
+                       MAX(vida_final) AS vida_final, 
+                       SUM(victorias) AS total_victorias, 
+                       SUM(supremos_usados) AS total_supremos
                 FROM personajes
-                ORDER BY victorias DESC
+                GROUP BY nombre
+                ORDER BY total_victorias DESC
                 """;
 
-        try (Connection conn = ConexionDB.conectar();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+        try (java.sql.Connection conn = ieig2.modelo.ConexionDB.conectar();
+             java.sql.Statement st = conn.createStatement();
+             java.sql.ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 ranking.add(
-                        rs.getString("nombre") +
-                        " | V:" + rs.getInt("victorias") +
-                        " | D:" + rs.getInt("derrotas")
+                        rs.getString("nombre") + "|" +
+                        rs.getString("tipo") + "|" +
+                        rs.getInt("vida_final") + "|" +
+                        rs.getInt("total_victorias") + "|" +
+                        rs.getInt("total_supremos")
                 );
             }
 
-        } catch (SQLException e) {
+        } catch (java.sql.SQLException e) {
             System.out.println("Error ranking: " + e.getMessage());
         }
 

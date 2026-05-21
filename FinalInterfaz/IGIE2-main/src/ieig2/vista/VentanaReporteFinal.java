@@ -94,89 +94,101 @@ public class VentanaReporteFinal extends JFrame {
     // CARGA DE DATOS DESDE TXT
     // ==============================
     private void cargarDatos() {
-        cargarRankingDesdeTXT();
-        cargarEstadisticasDesdeTXT();
+        cargarRankingDesdeBD();
+        cargarEstadisticasDesdeBD();
         cargarHistorialDesdeTXT();
     }
 
-    private void cargarRankingDesdeTXT() {
+    private void cargarRankingDesdeBD() {
         try {
-            List<PersistenciaManager.PersonajeDTO> personajes = PersistenciaManager.cargarPersonajes();
+            ieig2.modelo.PersonajeDAO dao = new ieig2.modelo.PersonajeDAO();
+            java.util.List<String> ranking = dao.obtenerRanking();
+            
+            // Volvemos a poner las 6 columnas
             String[] columnas = {"Nombre", "Apodo", "Tipo", "Vida Final", "Victorias", "Ataques Supremos"};
-            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+            javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(columnas, 0);
 
-            for (PersistenciaManager.PersonajeDTO p : personajes) {
-                String nombre = p.nombre;
-                String apodo = null;
-                int a = nombre.indexOf(" (");
-                if (a > 0 && nombre.endsWith(")")) {
-                    apodo = nombre.substring(a + 2, nombre.length() - 1);
-                    nombre = nombre.substring(0, a);
+            for (String fila : ranking) {
+                String[] partes = fila.split("\\|");
+                if (partes.length >= 5) {
+                    String nombreCompleto = partes[0];
+                    String tipo = partes[1];
+                    String vida = partes[2];
+                    String victorias = partes[3];
+                    String supremos = partes[4]; // Recuperamos los ataques supremos
+                    
+                    String nombreReal = nombreCompleto;
+                    String apodo = "-";
+                    int a = nombreCompleto.indexOf(" (");
+                    if (a > 0 && nombreCompleto.endsWith(")")) {
+                        apodo = nombreCompleto.substring(a + 2, nombreCompleto.length() - 1);
+                        nombreReal = nombreCompleto.substring(0, a);
+                    }
+
+                    // Agregamos la fila con todos los datos
+                    modelo.addRow(new Object[]{nombreReal, apodo, tipo, vida, victorias, supremos});
                 }
-                String tipo = p.tipo;
-                int vida = p.vida;
-                int victorias = 0; // No guardamos victorias por personaje aún
-                int ataquesSupremos = 0; // No guardamos supremos individuales en el TXT
-
-                modelo.addRow(new Object[]{nombre, apodo == null ? "-" : apodo, tipo, vida, victorias, ataquesSupremos});
             }
-
             tablaRanking.setModel(modelo);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error cargando ranking: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            System.out.println("Error al cargar ranking en la tabla: " + e.getMessage());
         }
     }
 
-    private void cargarEstadisticasDesdeTXT() {
+    private void cargarEstadisticasDesdeBD() {
         StringBuilder sb = new StringBuilder();
-        try {
-            // Cargar personajes
-            List<PersistenciaManager.PersonajeDTO> personajes = PersistenciaManager.cargarPersonajes();
+        sb.append("📊 ESTADÍSTICAS GENERALES (Desde Base de Datos)\n");
+        sb.append("===============================================\n\n");
 
-            // Mayor daño: usamos fuerza + bendición como aproximación
-            PersistenciaManager.PersonajeDTO mayor = null;
-            int mayorDanio = 0;
-            for (PersistenciaManager.PersonajeDTO p : personajes) {
-                int dano = p.fuerza + p.bendicion;
-                if (dano > mayorDanio) {
-                    mayorDanio = dano;
-                    mayor = p;
-                }
-            }
-            if (mayor != null) {
-                sb.append("Mayor daño en un solo ataque: ")
-                        .append(mayorDanio)
-                        .append(" (")
-                        .append(mayor.nombre)
-                        .append(")\n");
-            }
-
-            // Batalla más larga
-            HistorialBatallas historial = PersistenciaManager.cargarHistorial();
-            sb.append("Batalla más larga: ")
-                    .append(historial.getBatallaMasLargaTurnos())
-                    .append(" turnos (Ganador: ")
-                    .append(historial.getBatallaMasLargaGanador())
-                    .append(")\n");
-
-            // Armas invocadas y supremos
-            if (personajes.size() >= 2) {
-                sb.append("Armas invocadas: ")
-                        .append(personajes.get(0).nombre).append("=?")
-                        .append(", ").append(personajes.get(1).nombre).append("=?")
-                        .append("\n");
-
-                sb.append("Ataques supremos ejecutados: ")
-                        .append(personajes.get(0).nombre).append("=?")
-                        .append(", ").append(personajes.get(1).nombre).append("=?")
-                        .append("\n");
-            }
-
-            areaStats.setText(sb.toString());
-        } catch (IOException e) {
-            areaStats.setText("Error cargando estadísticas: " + e.getMessage());
+        // 1. Obtener totales de ataques supremos y armas invocadas
+        String sqlTotales = "SELECT SUM(supremos_usados) AS tot_supremos, SUM(armas_invocadas) AS tot_armas FROM personajes";
+        try (java.sql.Connection conn = ieig2.modelo.ConexionDB.conectar();
+             java.sql.Statement st = conn.createStatement();
+             java.sql.ResultSet rs = st.executeQuery(sqlTotales)) {
+             
+             if (rs.next()) {
+                 sb.append("⚔️ Total de Ataques Supremos usados: ").append(rs.getInt("tot_supremos")).append("\n");
+                 sb.append("🛡️ Total de Armas Invocadas en el juego: ").append(rs.getInt("tot_armas")).append("\n\n");
+             }
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error estadísticas totales: " + e.getMessage());
         }
+
+        // 2. Obtener la batalla más larga registrada y total de partidas
+        String sqlBatallas = "SELECT COUNT(*) AS total_batallas, MAX(turnos) AS max_turnos FROM batallas";
+        try (java.sql.Connection conn = ieig2.modelo.ConexionDB.conectar();
+             java.sql.Statement st = conn.createStatement();
+             java.sql.ResultSet rs = st.executeQuery(sqlBatallas)) {
+             
+             if (rs.next()) {
+                 sb.append("🎮 Cantidad de batallas disputadas: ").append(rs.getInt("total_batallas")).append("\n");
+                 if (rs.getInt("max_turnos") > 0) {
+                     sb.append("⏳ Batalla más larga registrada: ").append(rs.getInt("max_turnos")).append(" turnos\n\n");
+                 } else {
+                     sb.append("⏳ Batalla más larga registrada: 0 turnos\n\n");
+                 }
+             }
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error estadísticas batallas: " + e.getMessage());
+        }
+
+        // 3. Obtener el personaje con más victorias (Líder del Ranking)
+        String sqlLider = "SELECT nombre, victorias FROM personajes ORDER BY victorias DESC LIMIT 1";
+        try (java.sql.Connection conn = ieig2.modelo.ConexionDB.conectar();
+             java.sql.Statement st = conn.createStatement();
+             java.sql.ResultSet rs = st.executeQuery(sqlLider)) {
+             
+             if (rs.next() && rs.getInt("victorias") > 0) {
+                 sb.append("🏆 Líder invicto actual: ").append(rs.getString("nombre"))
+                   .append(" con ").append(rs.getInt("victorias")).append(" victorias\n");
+             } else {
+                 sb.append("🏆 Líder invicto actual: Sin registros aún\n");
+             }
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error estadísticas líder: " + e.getMessage());
+        }
+
+        areaStats.setText(sb.toString());
     }
 
     private void cargarHistorialDesdeTXT() {
