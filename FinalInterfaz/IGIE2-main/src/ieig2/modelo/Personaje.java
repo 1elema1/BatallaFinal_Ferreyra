@@ -7,6 +7,7 @@ package ieig2.modelo;
 
 import java.util.*;
 import ieig2.modelo.Arma;
+import ieig2.modelo.Item; // Asegúrate de importar tu clase Item
 
 public abstract class Personaje {
     //  Estado base del personaje 
@@ -25,6 +26,9 @@ public abstract class Personaje {
     protected int mayorDanio = 0;     // daño más alto hecho en un ataque
     protected int turnosTotales = 0;  // cantidad total de turnos jugados
 
+    // --- NUEVO ATRIBUTO PARA ITEMS ---
+    protected List<Item> inventario = new ArrayList<>();
+
     public Personaje(String nombre, int vida, int fuerza, int defensa, int bendicion) {
         this.nombre = nombre;
         this.vida = vida;
@@ -32,6 +36,16 @@ public abstract class Personaje {
         this.defensa = defensa;
         this.bendicion = bendicion;
     }
+
+    public void equiparItem(Item item) {
+        this.inventario.add(item);
+        this.vida += item.getEfectoVida();
+    }
+
+    public List<Item> getInventario() {
+        return inventario;
+    }
+    // -------------------------------------------------
 
     public boolean estaVivo() { 
         return vida > 0; 
@@ -45,6 +59,13 @@ public abstract class Personaje {
 
     public String atacar(Personaje enemigo) {
         StringBuilder log = new StringBuilder();
+        
+        if (!inventario.isEmpty()) {
+            log.append("--- Ítems activos de " + nombre + ": ---\n");
+            for (Item item : inventario) {
+                log.append("-> " + item.getNombre() + " (Efecto: +" + item.getEfectoVida() + " Vida)\n");
+            }
+        }
         
         int total = fuerza + (arma != null ? arma.getDanioExtra() : 0);
         String armaUsada = (arma != null ? arma.getNombre() : "puños");
@@ -84,12 +105,9 @@ public abstract class Personaje {
     public String getNombre() { return nombre; }
     public int getVida() { return Math.max(vida, 0); }
     
-    
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
-
 
     /** Devuelve el mayor daño hecho en un solo ataque */
     public Integer getMayorDanio() {

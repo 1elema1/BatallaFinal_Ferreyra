@@ -1,6 +1,6 @@
-29
-BATALLA #25 - Heroe: pruebaaaa (aaaa) | Villano: malaaa (aaaaaasda) | Ganador: pruebaaaa (aaaa) | Turnos: 6
-BATALLA #26 - Heroe: pruebaaaa (aaaa) | Villano: malaaa (aaaaaasda) | Ganador: pruebaaaa (aaaa) | Turnos: 6
-BATALLA #27 - Heroe: elema (aaa) | Villano: tomiiisdfsdf (sssss) | Ganador: elema (aaa) | Turnos: 7
+32
 BATALLA #28 - Heroe: elema (aaa) | Villano: tomiiisdfsdf (sssss) | Ganador: elema (aaa) | Turnos: 7
 BATALLA #29 - Heroe: elema (aaa) | Villano: tomiiisdfsdf (sssss) | Ganador: elema (aaa) | Turnos: 7
+BATALLA #30 - Heroe: eeee (eeee) | Villano: dddd (ddd) | Ganador: eeee (eeee) | Turnos: 6
+BATALLA #31 - Heroe: eeee (eeee) | Villano: dddd (ddd) | Ganador: eeee (eeee) | Turnos: 6
+BATALLA #32 - Heroe: eeee (eeee) | Villano: dddd (ddd) | Ganador: eeee (eeee) | Turnos: 6

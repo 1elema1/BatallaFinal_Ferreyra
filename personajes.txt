@@ -1,8 +1,8 @@
-HEROE;elema (aaa);15;22;8;31
-VILLANO;tomiiisdfsdf (sssss);0;22;8;31
+HEROE;eeee (eeee);173;24;102;81
+VILLANO;dddd (ddd);0;24;12;81
 -----
-MAYOR_DAÑO: 19 (elema (aaa))
-BATALLA_MAS_LARGA: 7 turnos (ganador: elema (aaa))
-ARMAS_INVOCADAS: elema (aaa)=1, tomiiisdfsdf (sssss)=1
-ATAQUES_SUPREMOS: elema (aaa)=0, tomiiisdfsdf (sssss)=0
+MAYOR_DAÑO: 27 (eeee (eeee))
+BATALLA_MAS_LARGA: 6 turnos (ganador: eeee (eeee))
+ARMAS_INVOCADAS: eeee (eeee)=1, dddd (ddd)=1
+ATAQUES_SUPREMOS: eeee (eeee)=0, dddd (ddd)=0
 PORCENTAJE_VICTORIAS: HEROE=100%, VILLANO=0%
