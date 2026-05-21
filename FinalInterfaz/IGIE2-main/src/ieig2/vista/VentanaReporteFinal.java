@@ -30,6 +30,16 @@ public class VentanaReporteFinal extends JFrame {
         panelPrincipal.add(crearPanelStats(), "stats");
         panelPrincipal.add(crearPanelHistorial(), "historial");
         add(panelPrincipal);
+        
+        // --- BOTÓN ACTUALIZAR ---
+        JButton btnActualizar = new JButton("🔄 Actualizar Datos desde BD");
+        btnActualizar.addActionListener(e -> cargarDatosDesdeBD());
+        JPanel panelInferior = new JPanel();
+        panelInferior.add(btnActualizar);
+        add(panelInferior, BorderLayout.SOUTH);
+
+        layout.show(panelPrincipal, seccionInicial);
+        cargarDatosDesdeBD();
 
         // Mostrar la sección inicial
         layout.show(panelPrincipal, seccionInicial);
@@ -97,6 +107,27 @@ public class VentanaReporteFinal extends JFrame {
         cargarRankingDesdeBD();
         cargarEstadisticasDesdeBD();
         cargarHistorialDesdeTXT();
+    }
+    private void cargarDatosDesdeBD() {
+        // Carga Ranking
+        ieig2.modelo.PersonajeDAO dao = new ieig2.modelo.PersonajeDAO();
+        List<String> ranking = dao.obtenerRanking();
+        DefaultTableModel modelo = (DefaultTableModel) tablaRanking.getModel();
+        modelo.setRowCount(0);
+
+        for (String fila : ranking) {
+            String[] p = fila.split("\\|");
+            if (p.length >= 5) {
+                modelo.addRow(new Object[]{p[0], "-", p[1], p[2], p[3], p[4]});
+            }
+        }
+        
+        // Cargar Historial
+        ieig2.modelo.BatallaDAO bDao = new ieig2.modelo.BatallaDAO();
+        List<String> hist = bDao.obtenerHistorial();
+        areaHistorial.setText(String.join("\n", hist));
+        
+        areaStats.setText("Datos actualizados desde base de datos.");
     }
 
     private void cargarRankingDesdeBD() {
